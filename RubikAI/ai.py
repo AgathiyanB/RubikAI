@@ -25,11 +25,9 @@ class Layer:
     def gradient_descent(self,dcostoutput):
         dsigmoid = self.sigmoid_derivative(self.z)                                      #dsigmoid(z)/dz     (note dsigmoid(z) = output)
         dweights = np.matmul(dsigmoid*dcostoutput,np.transpose(self.input_values)) #(dcost/output)*(dsigmoid(z)/dz)*(dz/dweight)
-        print(dweights)
-        dbiases = dsigmoid*dcostoutput                                                  #(dcost/output)*(dsigmoid(z)/dz)*(dz/dwbiases)
-        print(dbiases)
+        dbiases = dsigmoid*dcostoutput
         if not self.first_layer:
-            dinputs = np.matmul(self.weights,dsigmoid*dcostoutput) #summed over different z (dcost/output)*(dsigmoid(z)/dz)*(dz/dinputs)
+            dinputs = np.matmul(np.transpose(self.weights),dsigmoid*dcostoutput) #summed over different z (dcost/output)*(dsigmoid(z)/dz)*(dz/dinputs)
             self.input.gradient_descent(dinputs)
         self.weights -= dweights
         self.biases -= dbiases
@@ -56,3 +54,4 @@ class NeuralNetwork:
         network_value = self.evaluate(input_vector)
         dcostinput = 2*(network_value - np.array(desired_values).reshape(self.output_size,1))   #change in cost relative to change in input      
         self.layers[-1].gradient_descent(dcostinput)    #This will call gradient_descent in previous layers through back propogation
+        return np.sum((network_value - np.array(desired_values).reshape(self.output_size,1))**2) #this is the cost
