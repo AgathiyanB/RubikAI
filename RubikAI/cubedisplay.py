@@ -10,7 +10,6 @@ def create_net(master,faces):
     position = {0:(1,1),1:(3,1),2:(1,2),3:(1,0),4:(0,1),5:(2,1)}
     rotation = {0:3,1:0,2:2,3:3,4:0,5:3}
     #Number of clockwise rotations to set the face in the right orientation
-    subframes = []
     #A 4d array referring to all of the stickers on the cube
     labels = []
     for i in range(0,6):

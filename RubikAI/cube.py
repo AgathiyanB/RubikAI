@@ -73,5 +73,3 @@ class Cube:
                 face = np.transpose(face)
             faces.append(face)
         return faces
-
-
