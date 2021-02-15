@@ -1,5 +1,5 @@
 # NeuralNetwork
-Initially was an attempt at a Rubik's cube AI, now realising that is a bit of jump, this is going to be a collection of neural networking applications, until building up to a Rubik's cube AI.
+Initially was an attempt at a Rubik's cube AI, now realising that is a bit of jump, this is going to be a collection of neural networking applications, building up to a Rubik's cube AI.
 
 I have kept the code used to represent and display the cube in the repo though as like I said, the goal of this project is to eventually be able to tackle the cube.
 
