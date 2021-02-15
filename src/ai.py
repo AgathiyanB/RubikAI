@@ -2,7 +2,8 @@ import numpy as np
 import dataset
 
 class Layer:
-    def __init__(self,input_size,output_size,is_first_layer = True,input = None):
+    def __init__(self,input_size,output_size,alpha,is_first_layer = True,input = None):
+        self.alpha = alpha #this is the training rate of the network
         self.first_layer = is_first_layer #If first layer, in gradient_descent doesn't call previous layer
         self.input = input                #Stores layer preceding this layer
         self.z = np.zeros((output_size,1)) #stores value nodes before non-linear sigmoid
@@ -36,23 +37,24 @@ class Layer:
         self.dbiases.append(dbiases)
     
     def gradient_descent(self):
-        print(self.dweights)
-        self.weights -= np.average(self.dweights,axis = 0)
-        self.biases -= np.average(self.dbiases,axis = 0)
+        self.weights -= self.alpha*np.average(self.dweights,axis = 0)
+        self.biases -= self.alpha*np.average(self.dbiases,axis = 0)
+        #print(self.alpha*np.average(self.dweights,axis = 0))
         self.dweights = []
         self.dbiases = []
 
 
 class NeuralNetwork:
-    def __init__(self,layer_shapes,dataset = None): #layer_shapes an array of the shape of the weights matrix
+    def __init__(self,layer_shapes,dataset = None,alpha = 1): #layer_shapes an array of the shape of the weights matrix
         if len(layer_shapes) == 0:
             raise Exception("Need the shape of at least an input and an output layer")
+        self.alpha = alpha
         self.dataset = dataset
-        self.layers = [Layer(layer_shapes[0],layer_shapes[1])]
+        self.layers = [Layer(layer_shapes[0],layer_shapes[1],self.alpha)]
         self.input_size = layer_shapes[0]
         self.output_size = layer_shapes[-1]
         for i in range(1,len(layer_shapes)-1):
-            self.layers.append(Layer(layer_shapes[i],layer_shapes[i+1],is_first_layer=False,input=self.layers[-1]))
+            self.layers.append(Layer(layer_shapes[i],layer_shapes[i+1],self.alpha,is_first_layer=False,input=self.layers[-1]))
     
     def evaluate(self,input_vector):
         next_input = np.array(input_vector).reshape(self.input_size,1) #variable passes values 
@@ -63,14 +65,24 @@ class NeuralNetwork:
     def set_dataset(self,dataset):
         self.dataset = dataset
 
-    def train_network_stochastic(self,batch_size):
-        training_data = self.dataset.get_training_data_batch(self,batch_size)
+    def SGD_dataset(self,batch_size):
+        training_data = self.dataset.get_training_data_batch(batch_size)
         costs = []          #eventually could be used for a graph plot
-        for [input_vector,expected_output] in training_data:
+        for input_vector,expected_output in training_data:
             network_value = self.evaluate(input_vector)
             cost = np.sum((network_value - np.array(expected_output).reshape(self.output_size,1))**2)
             costs.append(cost)
             dcostinput = 2*(network_value - np.array(expected_output).reshape(self.output_size,1))   #change in cost relative to change in input      
             self.layers[-1].cost_derivative(dcostinput)    #This will call cost_derivative in previous layers through back propogation
+        print(costs)
+        for layer in self.layers:
+            layer.gradient_descent()                   #Applies changes to network parameters
+
+    def SGD_on_input(self,input_vector,expected_output):
+        network_value = self.evaluate(input_vector)
+        cost = np.sum((network_value - np.array(expected_output).reshape(self.output_size,1))**2)
+        print(cost)
+        dcostinput = 2*(network_value - np.array(expected_output).reshape(self.output_size,1))   #change in cost relative to change in input      
+        self.layers[-1].cost_derivative(dcostinput)    #This will call cost_derivative in previous layers through back propogation
         for layer in self.layers:
             layer.gradient_descent()                   #Applies changes to network parameters

@@ -47,6 +47,8 @@ class Cube:
                                                              piece_pos)
 
     def turn(self,vector,direction):
+        if not vector in self.vector_face:
+            raise Exception(f'Invalid face vector input {vector}')
         '''vector is the direction the centre piece of the side points in, direction is 1 for clockwise, -1 for anticlockwise'''
         side = self.cube[self.vector_face[vector]]
         #Describes a rotation matrix to be applied to the slice
