@@ -73,3 +73,17 @@ class Cube:
                 face = np.transpose(face)
             faces.append(face)
         return faces
+
+    def vectorize(self):    #Provides a unique representation of the cube which will be used for neural network input, 324 size vector
+        def colour_to_vector(colour):
+            vector = np.zeros(6)
+            vector[colour] = 1
+            return vector
+        faces = np.zeros((6,3,3,6),np.int8)
+        for i,vector in enumerate([(1,0,0),(-1,0,0),(0,1,0),(0,-1,0),(0,0,1),(0,0,-1)]):
+            side = self.cube[self.vector_face[vector]]
+            for x in range(0,3):
+                for y in range(0,3):
+                    faces[i,x,y] = colour_to_vector(side[x,y].get_colour(np.array(vector)))
+        return np.array(faces).flatten()
+        
