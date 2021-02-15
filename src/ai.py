@@ -39,7 +39,6 @@ class Layer:
     def gradient_descent(self):
         self.weights -= self.alpha*np.average(self.dweights,axis = 0)
         self.biases -= self.alpha*np.average(self.dbiases,axis = 0)
-        #print(self.alpha*np.average(self.dweights,axis = 0))
         self.dweights = []
         self.dbiases = []
 
